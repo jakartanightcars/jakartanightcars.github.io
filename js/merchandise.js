@@ -185,7 +185,7 @@ function closeSizeGuide() {
 function updateWhatsAppLink() {
     const productName = 'JNC Premium Hoodie';
     const price = 'IDR 450,000';
-    const phoneNumber = '6282129626078';
+    const phoneNumber = '6281311111111';
     
     const message = `Halo JNC Merch! Saya ingin memesan:\n\n` +
                    `Produk: ${productName}\n` +
