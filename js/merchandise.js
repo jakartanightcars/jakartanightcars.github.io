@@ -1,385 +1,267 @@
-const checkoutForm = document.getElementById('checkoutForm');
-const payButton = document.getElementById('payButton');
-const sizeButtons = document.querySelectorAll('.size-btn');
-const qtyMinus = document.querySelector('.qty-btn.minus');
-const qtyPlus = document.querySelector('.qty-btn.plus');
-const qtyDisplay = document.querySelector('.qty');
-const paymentModal = document.getElementById('paymentModal');
-const closeModal = document.getElementById('closeModal');
-const successState = document.getElementById('successState');
-const pendingState = document.getElementById('pendingState');
-const errorState = document.getElementById('errorState');
-const loadingState = document.getElementById('loadingState');
-const downloadReceipt = document.getElementById('downloadReceipt');
-const continueShopping = document.getElementById('continueShopping');
-const closePending = document.getElementById('closePending');
-const retryPayment = document.getElementById('retryPayment');
-const changePayment = document.getElementById('changePayment');
+const images = [
+    'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png',
+    'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png',
+    'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png',
+    'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png'
+];
 
-const basePrice = 250000;
-const shippingCost = 25000;
-const taxRate = 0.1;
-let quantity = 1;
+let currentSlide = 0;
 let selectedSize = 'M';
-let isProcessing = false;
+let autoSlideInterval;
 
 function init() {
-    sizeButtons.forEach(btn => {
-        if (btn.dataset.size === selectedSize) {
-            btn.classList.add('active');
-        }
-        btn.addEventListener('click', handleSizeSelection);
+    createThumbnails();
+    setupEventListeners();
+    updateWhatsAppLink();
+    startAutoSlide();
+}
+
+function createThumbnails() {
+    const container = document.getElementById('thumbnailsContainer');
+    const totalSlides = document.getElementById('totalSlides');
+    
+    container.innerHTML = '';
+    totalSlides.textContent = images.length;
+    
+    images.forEach((image, index) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'thumbnail' + (index === 0 ? ' active' : '');
+        thumbnail.dataset.index = index;
+        
+        const img = document.createElement('img');
+        img.src = image;
+        img.alt = `Hoodie View ${index + 1}`;
+        
+        thumbnail.appendChild(img);
+        container.appendChild(thumbnail);
+        
+        thumbnail.addEventListener('click', () => {
+            changeSlide(index);
+            resetAutoSlide();
+        });
+    });
+}
+
+function changeSlide(index) {
+    currentSlide = index;
+    const currentImage = document.getElementById('currentImage');
+    const currentSlideSpan = document.getElementById('currentSlide');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    
+    currentImage.style.opacity = '0';
+    
+    setTimeout(() => {
+        currentImage.src = images[index];
+        currentSlideSpan.textContent = index + 1;
+        currentImage.style.opacity = '1';
+        
+        thumbnails.forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === index);
+        });
+    }, 200);
+}
+
+function setupEventListeners() {
+    const prevBtn = document.querySelector('.prev-arrow');
+    const nextBtn = document.querySelector('.next-arrow');
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    const sizeGuideLink = document.querySelector('.size-guide-link a');
+    const closeModal = document.querySelector('.close-modal');
+    const sizeGuideModal = document.getElementById('sizeGuide');
+    const whatsappButton = document.getElementById('whatsappOrderButton');
+    
+    prevBtn.addEventListener('click', () => {
+        currentSlide = currentSlide === 0 ? images.length - 1 : currentSlide - 1;
+        changeSlide(currentSlide);
+        resetAutoSlide();
     });
     
-    updateOrderSummary();
-    setupEventListeners();
-    initModal();
-}
-
-function handleSizeSelection(e) {
-    sizeButtons.forEach(btn => btn.classList.remove('active'));
-    const button = e.target;
-    button.classList.add('active');
-    selectedSize = button.dataset.size;
-}
-
-function updateQuantity(change) {
-    quantity = Math.max(1, Math.min(quantity + change, 10));
-    if (qtyDisplay) {
-        qtyDisplay.textContent = quantity;
-    }
-    updateOrderSummary();
-}
-
-function updateOrderSummary() {
-    const subtotal = basePrice * quantity;
-    const tax = subtotal * taxRate;
-    const total = subtotal + shippingCost + tax;
+    nextBtn.addEventListener('click', () => {
+        currentSlide = currentSlide === images.length - 1 ? 0 : currentSlide + 1;
+        changeSlide(currentSlide);
+        resetAutoSlide();
+    });
     
-    const subtotalElement = document.getElementById('subtotal');
-    const taxElement = document.getElementById('tax');
-    const totalElement = document.getElementById('total');
-    
-    if (subtotalElement) subtotalElement.textContent = formatCurrency(subtotal);
-    if (taxElement) taxElement.textContent = formatCurrency(tax);
-    if (totalElement) totalElement.textContent = formatCurrency(total);
-    
-    if (payButton) {
-        payButton.innerHTML = `<i class="fas fa-qrcode"></i> Pay ${formatCurrency(total)}`;
-    }
-}
-
-function formatCurrency(amount) {
-    return 'IDR ' + amount.toLocaleString('id-ID');
-}
-
-function showLoading(button) {
-    if (button) {
-        button.disabled = true;
-        button.innerHTML = '<span class="loading"></span> Processing...';
-        isProcessing = true;
-    }
-}
-
-function hideLoading(button, originalText) {
-    if (button) {
-        button.disabled = false;
-        button.innerHTML = originalText;
-        isProcessing = false;
-    }
-}
-
-function validateFormData(formData) {
-    const errors = [];
-    
-    if (!formData.fullName?.trim()) errors.push('Full name is required');
-    if (!formData.email?.trim()) errors.push('Email is required');
-    if (!formData.phone?.trim()) errors.push('Phone number is required');
-    if (!formData.address?.trim()) errors.push('Address is required');
-    if (!formData.city?.trim()) errors.push('City is required');
-    if (!formData.postalCode?.trim()) errors.push('Postal code is required');
-    if (!formData.province?.trim()) errors.push('Province is required');
-    if (!formData.terms) errors.push('You must agree to the terms and conditions');
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-        errors.push('Please enter a valid email address');
-    }
-    
-    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-        errors.push('Please enter a valid Indonesian phone number (e.g., 08123456789)');
-    }
-    
-    return errors;
-}
-
-function resetLoadingState() {
-    const total = basePrice * quantity + shippingCost + (basePrice * quantity * taxRate);
-    hideLoading(payButton, `<i class="fas fa-qrcode"></i> Pay ${formatCurrency(total)}`);
-    isProcessing = false;
-}
-
-async function processPayment(formData) {
-    try {
-        showLoadingModal();
-        
-        const subtotal = basePrice * quantity;
-        const tax = subtotal * taxRate;
-        const total = subtotal + shippingCost + tax;
-        
-        const paymentData = {
-            fullName: formData.fullName,
-            email: formData.email,
-            phone: formData.phone,
-            address: formData.address,
-            city: formData.city,
-            postalCode: formData.postalCode,
-            province: formData.province,
-            notes: formData.notes || '',
-            terms: 'true',
-            productName: 'JNC Night Glow T-Shirt',
-            productPrice: basePrice,
-            size: selectedSize,
-            quantity: quantity
-        };
-        
-        console.log(paymentData)
-        
-    } catch (error) {
-        showPaymentError({
-            error_message: error.message || 'Payment processing failed'
+    sizeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            sizeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedSize = btn.dataset.size;
+            document.getElementById('selectedSizeDisplay').textContent = selectedSize;
+            updateWhatsAppLink();
         });
-        resetLoadingState();
-        throw error;
-    }
-}
-
-function initModal() {
-    if (closeModal) {
-        closeModal.addEventListener('click', function() {
-            closePaymentModal();
-            resetLoadingState();
-        });
-    }
+    });
     
-    paymentModal.addEventListener('click', (e) => {
-        if (e.target === paymentModal) {
-            closePaymentModal();
-            resetLoadingState();
+    sizeGuideLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        sizeGuideModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    });
+    
+    closeModal.addEventListener('click', () => {
+        closeSizeGuide();
+    });
+    
+    sizeGuideModal.addEventListener('click', (e) => {
+        if (e.target === sizeGuideModal) {
+            closeSizeGuide();
         }
     });
     
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && paymentModal.classList.contains('active')) {
-            closePaymentModal();
-            resetLoadingState();
+        if (e.key === 'Escape' && sizeGuideModal.style.display === 'flex') {
+            closeSizeGuide();
         }
     });
     
-    if (continueShopping) {
-        continueShopping.addEventListener('click', () => {
-            closePaymentModal();
-            window.location.href = 'index.html#merchandise';
-        });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            currentSlide = currentSlide === 0 ? images.length - 1 : currentSlide - 1;
+            changeSlide(currentSlide);
+            resetAutoSlide();
+        } else if (e.key === 'ArrowRight') {
+            currentSlide = currentSlide === images.length - 1 ? 0 : currentSlide + 1;
+            changeSlide(currentSlide);
+            resetAutoSlide();
+        }
+    });
+    
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const mainImageContainer = document.querySelector('.main-image-container');
+    
+    mainImageContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    mainImageContainer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        
+        if (touchEndX < touchStartX - swipeThreshold) {
+            currentSlide = currentSlide === images.length - 1 ? 0 : currentSlide + 1;
+            changeSlide(currentSlide);
+            resetAutoSlide();
+        }
+        
+        if (touchEndX > touchStartX + swipeThreshold) {
+            currentSlide = currentSlide === 0 ? images.length - 1 : currentSlide - 1;
+            changeSlide(currentSlide);
+            resetAutoSlide();
+        }
     }
     
-    if (closePending) {
-        closePending.addEventListener('click', function() {
-            closePaymentModal();
-            resetLoadingState();
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('mouseenter', () => {
+            thumbnail.style.transform = 'scale(1.05)';
         });
-    }
-    
-    if (retryPayment) {
-        retryPayment.addEventListener('click', () => {
-            closePaymentModal();
-            resetLoadingState();
-            setTimeout(() => {
-                if (checkoutForm) {
-                    checkoutForm.dispatchEvent(new Event('submit'));
-                }
-            }, 500);
+        
+        thumbnail.addEventListener('mouseleave', () => {
+            thumbnail.style.transform = 'scale(1)';
         });
-    }
+    });
     
-    if (changePayment) {
-        changePayment.addEventListener('click', () => {
-            closePaymentModal();
-            resetLoadingState();
-            const paymentOptions = document.querySelector('.payment-options');
-            if (paymentOptions) {
-                paymentOptions.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
+    whatsappButton.addEventListener('mouseenter', () => {
+        whatsappButton.style.transform = 'scale(1.02)';
+    });
     
-    if (downloadReceipt) {
-        downloadReceipt.addEventListener('click', downloadPaymentReceipt);
-    }
+    whatsappButton.addEventListener('mouseleave', () => {
+        whatsappButton.style.transform = 'scale(1)';
+    });
 }
 
-function showPaymentModal() {
-    paymentModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closePaymentModal() {
-    paymentModal.classList.remove('active');
+function closeSizeGuide() {
+    const sizeGuideModal = document.getElementById('sizeGuide');
+    sizeGuideModal.style.display = 'none';
     document.body.style.overflow = 'auto';
+}
+
+function updateWhatsAppLink() {
+    const productName = 'JNC Premium Hoodie';
+    const price = 'IDR 450,000';
+    const phoneNumber = '6282129626078';
     
-    const states = [successState, pendingState, errorState, loadingState];
-    states.forEach(state => {
-        if (state) state.classList.add('hidden');
-    });
-    if (loadingState) loadingState.classList.remove('hidden');
-}
-
-function showLoadingModal() {
-    showPaymentModal();
-    if (loadingState) loadingState.classList.remove('hidden');
-    const states = [successState, pendingState, errorState];
-    states.forEach(state => {
-        if (state) state.classList.add('hidden');
-    });
-}
-
-function showPaymentSuccess(result) {
-    if (successState) {
-        const orderIdEl = document.getElementById('successOrderId');
-        const transactionIdEl = document.getElementById('successTransactionId');
-        const amountEl = document.getElementById('successAmount');
-        const paymentMethodEl = document.getElementById('successPaymentMethod');
-        
-        if (orderIdEl) orderIdEl.textContent = result.order_id || '-';
-        if (transactionIdEl) transactionIdEl.textContent = result.transaction_id || '-';
-        if (amountEl) {
-            const amount = result.gross_amount || (basePrice * quantity + shippingCost + (basePrice * quantity * taxRate));
-            amountEl.textContent = formatCurrency(amount);
-        }
-        if (paymentMethodEl) paymentMethodEl.textContent = result.payment_type || 'QRIS';
-        
-        successState.classList.remove('hidden');
-        loadingState.classList.add('hidden');
-    }
+    const message = `Halo JNC Merch! Saya ingin memesan:\n\n` +
+                   `Produk: ${productName}\n` +
+                   `Size: ${selectedSize}\n` +
+                   `Harga: ${price}\n\n` +
+                   `Apakah masih tersedia?`;
     
-    resetCheckoutForm();
-}
-
-function showPaymentPending(result) {
-    if (pendingState) {
-        const orderIdEl = document.getElementById('pendingOrderId');
-        const transactionIdEl = document.getElementById('pendingTransactionId');
-        const amountEl = document.getElementById('pendingAmount');
-        
-        if (orderIdEl) orderIdEl.textContent = result.order_id || '-';
-        if (transactionIdEl) transactionIdEl.textContent = result.transaction_id || '-';
-        if (amountEl) {
-            const amount = result.gross_amount || (basePrice * quantity + shippingCost + (basePrice * quantity * taxRate));
-            amountEl.textContent = formatCurrency(amount);
-        }
-        
-        pendingState.classList.remove('hidden');
-        loadingState.classList.add('hidden');
-    }
-}
-
-function showPaymentError(result) {
-    if (errorState) {
-        const orderIdEl = document.getElementById('errorOrderId');
-        const errorMessageEl = document.getElementById('errorMessage');
-        
-        if (orderIdEl) orderIdEl.textContent = result.order_id || '-';
-        if (errorMessageEl) {
-            errorMessageEl.textContent = result.status_message || result.error_message || 'Unknown error occurred';
-        }
-        
-        errorState.classList.remove('hidden');
-        loadingState.classList.add('hidden');
-    }
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
-    resetLoadingState();
+    const whatsappButton = document.getElementById('whatsappOrderButton');
+    whatsappButton.href = whatsappUrl;
 }
 
-function downloadPaymentReceipt() {
-    const receiptBtn = document.getElementById('downloadReceipt');
-    if (receiptBtn) {
-        const originalText = receiptBtn.innerHTML;
-        receiptBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
-        receiptBtn.disabled = true;
+function startAutoSlide() {
+    autoSlideInterval = setInterval(() => {
+        currentSlide = currentSlide === images.length - 1 ? 0 : currentSlide + 1;
+        changeSlide(currentSlide);
+    }, 5000);
+}
+
+function resetAutoSlide() {
+    clearInterval(autoSlideInterval);
+    startAutoSlide();
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        if (this.getAttribute('href') === '#') return;
         
-        setTimeout(() => {
-            receiptBtn.innerHTML = originalText;
-            receiptBtn.disabled = false;
-        }, 2000);
-    }
-}
-
-function resetCheckoutForm() {
-    if (checkoutForm) {
-        checkoutForm.reset();
-    }
-    
-    quantity = 1;
-    if (qtyDisplay) qtyDisplay.textContent = '1';
-    selectedSize = 'M';
-    
-    sizeButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.size === 'M') {
-            btn.classList.add('active');
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 100,
+                behavior: 'smooth'
+            });
         }
     });
-    
-    updateOrderSummary();
-}
+});
 
-async function handleFormSubmit(e) {
-    e.preventDefault();
+document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('load', function() {
+        this.style.opacity = '1';
+    });
     
-    if (isProcessing) {
-        return;
-    }
-    
-    const formData = {
-        fullName: document.getElementById('fullName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        city: document.getElementById('city').value,
-        postalCode: document.getElementById('postalCode').value,
-        province: document.getElementById('province').value,
-        notes: document.getElementById('notes').value,
-        terms: document.getElementById('terms').checked
-    };
-    
-    const errors = validateFormData(formData);
-    if (errors.length > 0) {
-        alert('Please fix the following errors:\n\n' + errors.join('\n'));
-        return;
-    }
-    
-    try {
-        const total = basePrice * quantity + shippingCost + (basePrice * quantity * taxRate);
-        showLoading(payButton);
-        await processPayment(formData);
-        
-    } catch (error) {
-        resetLoadingState();
-    }
-}
-
-function setupEventListeners() {
-    if (qtyMinus) {
-        qtyMinus.addEventListener('click', () => updateQuantity(-1));
-    }
-    if (qtyPlus) {
-        qtyPlus.addEventListener('click', () => updateQuantity(1));
-    }
-    
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', handleFormSubmit);
-    }
-}
+    img.addEventListener('error', function() {
+        this.src = 'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png';
+        this.alt = 'Image not available';
+    });
+});
 
 document.addEventListener('DOMContentLoaded', init);
+
+window.addEventListener('scroll', () => {
+    const backHome = document.querySelector('.back-home');
+    if (window.scrollY > 300) {
+        backHome.style.opacity = '0.7';
+        backHome.style.transform = 'translateY(0)';
+    } else {
+        backHome.style.opacity = '1';
+        backHome.style.transform = 'translateY(-10px)';
+    }
+});
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+`;
+document.head.appendChild(style);

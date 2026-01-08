@@ -3,9 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>JNC Premium Hoodie - Jakarta Night Cars</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/merchandise.css">
 </head>
 <body>
-    
+    <header class="merch-header">
+        <div class="container">
+            <a href="index.html" class="back-home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            <div class="merch-logo">
+                <img src="./assets/jnclogo.png" alt="JNC Logo">
+            </div>
+        </div>
+    </header>
+
+    <main class="merch-container">
+        <div class="container">
+            
+            <div class="merch-content">
+                <div class="product-gallery">
+                    <div class="main-image-container">
+                        <div class="main-image">
+                            <img src="https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png" 
+                                 alt="JNC Hoodie Front" id="currentImage">
+                        </div>
+                        
+                        <div class="image-counter">
+                            <span id="currentSlide">1</span> / <span id="totalSlides">4</span>
+                        </div>
+                        
+                        <button class="slider-arrow prev-arrow">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="slider-arrow next-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="thumbnail-slider">
+                        <div class="thumbnails-container" id="thumbnailsContainer">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-details">
+                    <div class="product-header">
+                        <h2 class="product-name">JNC Premium Hoodie</h2>
+                    </div>
+                    
+                    <div class="price-section">
+                        <div class="current-price">
+                            <span class="price">IDR 450,000</span>
+                            <span class="discount-badge">-18%</span>
+                        </div>
+                        <div class="original-price">
+                            <s>IDR 550,000</s>
+                        </div>
+                        <div class="price-note">
+                            <i class="fas fa-tags"></i> Special pre-order price
+                        </div>
+                    </div>
+                    
+                    <div class="product-description">
+                        <p>Elevate your street style with our premium JNC Hoodie. Designed for the night riders who appreciate quality and comfort during those late-night meets and cruises.</p>
+                    </div>
+                    
+                    <div class="size-selection">
+                        <h3>
+                            <i class="fas fa-ruler"></i> Select Size
+                            <span class="size-guide-link">
+                                <a href="#sizeGuide">Size Guide</a>
+                            </span>
+                        </h3>
+                        <div class="size-options">
+                            <button type="button" class="size-btn" data-size="XS">XS</button>
+                            <button type="button" class="size-btn" data-size="S">S</button>
+                            <button type="button" class="size-btn active" data-size="M">M</button>
+                            <button type="button" class="size-btn" data-size="L">L</button>
+                            <button type="button" class="size-btn" data-size="XL">XL</button>
+                            <button type="button" class="size-btn" data-size="XXL">XXL</button>
+                        </div>
+                    </div>
+                    
+                    <div class="specifications">
+                        <h3>
+                            <i class="fas fa-info-circle"></i> Material Specifications
+                        </h3>
+                        <div class="spec-grid">
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-tshirt"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <h4>Fabric Weight</h4>
+                                    <p>GSM 330</p>
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <h4>Material</h4>
+                                    <p>80% Cotton / 20% Polyester</p>
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-mitten"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <h4>Inner</h4>
+                                    <p>Brushed Fleece</p>
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-paint-brush"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <h4>Print Quality</h4>
+                                    <p>Screen Print + Embroidery</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="features">
+                        <h3>
+                            <i class="fas fa-check-circle"></i> Features
+                        </h3>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Reflective JNC logo on chest</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Kangaroo pocket</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Adjustable drawstring hood</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Ribbed cuffs & hem</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Side-seam pockets</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Colorfast & shrink-resistant</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="whatsapp-checkout">
+                        <div class="checkout-header">
+                            <h3>
+                                <i class="fab fa-whatsapp"></i> Checkout via WhatsApp  
+                            </h3>
+                        </div>
+                        
+                        <div class="checkout-info">
+                            <p>
+                                <i class="fas fa-comment"></i> 
+                                Order directly via WhatsApp for faster processing and customer support.
+                            </p>
+                            <div class="whatsapp-number">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>+62 812 3456 7890</span>
+                            </div>
+                        </div>
+                        
+                        <div class="order-summary">
+                            <div class="summary-item">
+                                <span>Product:</span>
+                                <span>JNC Night Riders Hoodie</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Size:</span>
+                                <span id="selectedSizeDisplay">M</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Price:</span>
+                                <span>IDR 450,000</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span>IDR 450,000</span>
+                            </div>
+                        </div>
+                        
+                        <a href="https://wa.me/6281234567890?text=Halo%20JNC%20Merch!%20Saya%20ingin%20memesan%20JNC%20Night%20Riders%20Hoodie%20size%20M" 
+                           target="_blank" 
+                           class="whatsapp-button" 
+                           id="whatsappOrderButton">
+                            <i class="fab fa-whatsapp"></i> Order via WhatsApp
+                        </a>
+                        
+                        <div class="whatsapp-instruction">
+                            <p><i class="fas fa-info-circle"></i> Click button to open WhatsApp with pre-filled order message</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="sizeGuide" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>
+                        <i class="fas fa-ruler-combined"></i> Size Guide
+                    </h2>
+                    <button type="button" class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="size-guide-content">
+                        <table class="size-table">
+                            <thead>
+                                <tr>
+                                    <th>Size</th>
+                                    <th>Chest (cm)</th>
+                                    <th>Length (cm)</th>
+                                    <th>Fit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>XS</td>
+                                    <td>96-101</td>
+                                    <td>68</td>
+                                    <td>Slim</td>
+                                </tr>
+                                <tr>
+                                    <td>S</td>
+                                    <td>101-106</td>
+                                    <td>70</td>
+                                    <td>Slim</td>
+                                </tr>
+                                <tr>
+                                    <td>M</td>
+                                    <td>106-112</td>
+                                    <td>72</td>
+                                    <td>Regular</td>
+                                </tr>
+                                <tr>
+                                    <td>L</td>
+                                    <td>112-117</td>
+                                    <td>74</td>
+                                    <td>Regular</td>
+                                </tr>
+                                <tr>
+                                    <td>XL</td>
+                                    <td>117-122</td>
+                                    <td>76</td>
+                                    <td>Relaxed</td>
+                                </tr>
+                                <tr>
+                                    <td>XXL</td>
+                                    <td>122-127</td>
+                                    <td>78</td>
+                                    <td>Relaxed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="merch-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>JNC Merchandise</h3>
+                    <p>Official merchandise of Jakarta Night Cars community.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Support</h3>
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <i class="fas fa-phone"></i> Contact Support
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 Jakarta Night Cars. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./js/merchandise.js"></script>
 </body>
 </html>
