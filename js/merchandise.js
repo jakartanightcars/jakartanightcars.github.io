@@ -1,5 +1,5 @@
 const images = [
-    'assets/IMG_1732 (1).JPG',
+    'assets/IMG_1732.JPG',
     'assets/IMG_1660.JPG',
     'assets/IMG_1720.JPG',
     'assets/IMG_1678.JPG'
@@ -184,7 +184,7 @@ function closeSizeGuide() {
 
 function updateWhatsAppLink() {
     const productName = 'JNC Premium Hoodie';
-    const price = 'IDR 450,000';
+    const price = 'IDR 400,000';
     const phoneNumber = '+6285121599993';
     
     const message = `Halo JNC Merch! Saya ingin memesan:\n\n` +
@@ -235,7 +235,7 @@ document.querySelectorAll('img').forEach(img => {
     });
     
     img.addEventListener('error', function() {
-        this.src = 'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png';
+        this.src = 'https://jakartanightcars.github.io/assets/IMG_1732%20(1).JPG';
         this.alt = 'Image not available';
     });
 });
