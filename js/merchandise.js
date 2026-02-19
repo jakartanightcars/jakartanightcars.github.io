@@ -1,7 +1,7 @@
 const images = [
     'assets/IMG_1732 (1).JPG',
     'assets/IMG_1660.JPG',
-    'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png',
+    'assets/IMG_1720.JPG',
     'https://www.mdesiigns.com/cdn/shop/files/2_bd317869-f68f-4d67-819b-06d475fcc36b.png'
 ];
 
@@ -266,4 +266,5 @@ style.textContent = `
 `;
 
 document.head.appendChild(style);
+
 
